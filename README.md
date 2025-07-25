@@ -2,6 +2,16 @@
 
 A simple web application to help students track their college attendance and maintain the required 75% attendance rate.
 
+## ⚠️ COPYRIGHT NOTICE ⚠️
+
+**© 2023 Hemanth - All Rights Reserved**
+
+This project is protected by copyright law. The source code is publicly available for viewing and educational purposes only.
+
+**UNAUTHORIZED USE, MODIFICATION, OR DISTRIBUTION IS STRICTLY PROHIBITED.**
+
+Any use of this code without explicit written permission is a violation of copyright law and may result in legal action.
+
 ## Features
 
 - User registration and login

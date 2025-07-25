@@ -1,3 +1,16 @@
+/**
+ * College Attendance Tracker - Pure JavaScript Implementation
+ * 
+ * © 2023 Hemanth - All Rights Reserved
+ * 
+ * This source code is protected by copyright law and international treaties.
+ * Unauthorized reproduction or distribution of this source code, or any portion of it,
+ * may result in severe civil and criminal penalties, and will be prosecuted to
+ * the maximum extent possible under the law.
+ * 
+ * UNAUTHORIZED USE, MODIFICATION, OR DISTRIBUTION IS STRICTLY PROHIBITED.
+ */
+
 // College Attendance Tracker - Pure JavaScript Implementation
 
 class AttendanceTracker {
