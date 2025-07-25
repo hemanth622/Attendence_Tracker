@@ -18,6 +18,7 @@ class AttendanceTracker {
         this.currentUser = null;
         this.subjects = [];
         this.attendanceRecords = {};
+        this.todayMarked = {}; // Track if attendance has been marked today for each subject
         this.init();
     }
 
@@ -25,6 +26,7 @@ class AttendanceTracker {
         this.loadUserData();
         this.bindEvents();
         this.checkAuthState();
+        this.resetDailyMarks(); // Reset daily marks if it's a new day
     }
 
     bindEvents() {
@@ -48,6 +50,31 @@ class AttendanceTracker {
         document.getElementById('editSubjectForm').addEventListener('submit', (e) => this.updateSubject(e));
         
         // Event listeners for modals are now handled inline in the modal content
+    }
+
+    // Check if today's date is different from the stored date
+    resetDailyMarks() {
+        const today = new Date().toLocaleDateString();
+        const lastDate = localStorage.getItem('lastAttendanceDate');
+        
+        if (today !== lastDate) {
+            // It's a new day, reset the marked flags
+            this.todayMarked = {};
+            localStorage.setItem('lastAttendanceDate', today);
+        } else {
+            // Load today's marks from localStorage if available
+            const savedMarks = localStorage.getItem(`todayMarked_${this.currentUser?.studentId}`);
+            if (savedMarks) {
+                this.todayMarked = JSON.parse(savedMarks);
+            }
+        }
+    }
+
+    // Save today's marks to localStorage
+    saveTodayMarks() {
+        if (this.currentUser) {
+            localStorage.setItem(`todayMarked_${this.currentUser.studentId}`, JSON.stringify(this.todayMarked));
+        }
     }
 
     checkAuthState() {
@@ -74,6 +101,7 @@ class AttendanceTracker {
         if (users[studentId] && users[studentId].password === password) {
             this.currentUser = users[studentId];
             this.loadUserData();
+            this.resetDailyMarks(); // Reset daily marks when logging in
             this.showDashboard();
             this.showAlert('Login successful!', 'success');
         } else {
@@ -128,6 +156,7 @@ class AttendanceTracker {
         this.currentUser = null;
         this.subjects = [];
         this.attendanceRecords = {};
+        this.todayMarked = {};
         this.showScreen('login');
         this.showAlert('You have been logged out.', 'info');
     }
@@ -140,6 +169,12 @@ class AttendanceTracker {
         
         this.subjects = userData.subjects || [];
         this.attendanceRecords = userData.attendanceRecords || {};
+        
+        // Load today's marks
+        const savedMarks = localStorage.getItem(`todayMarked_${this.currentUser.studentId}`);
+        if (savedMarks) {
+            this.todayMarked = JSON.parse(savedMarks);
+        }
     }
 
     saveUserData() {
@@ -152,6 +187,7 @@ class AttendanceTracker {
         };
         
         localStorage.setItem(userKey, JSON.stringify(userData));
+        this.saveTodayMarks(); // Save today's marks
     }
 
     addSubject(e) {
@@ -287,6 +323,9 @@ class AttendanceTracker {
                             <button class="btn btn-outline-secondary btn-sm" onclick="window.attendanceApp.editSubjectDetails(${subject.id})" title="Edit Subject Details">
                                 <i class="fas fa-cog"></i>
                             </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="window.attendanceApp.deleteSubject(${subject.id})" title="Delete Subject">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -294,6 +333,20 @@ class AttendanceTracker {
             
             container.appendChild(col);
         });
+    }
+
+    deleteSubject(subjectId) {
+        if (confirm('Are you sure you want to delete this subject? This action cannot be undone.')) {
+            this.subjects = this.subjects.filter(s => s.id !== subjectId);
+            delete this.attendanceRecords[subjectId];
+            delete this.todayMarked[subjectId];
+            
+            this.saveUserData();
+            this.loadSubjects();
+            this.updateStats();
+            
+            this.showAlert('Subject deleted successfully!', 'success');
+        }
     }
 
     openEditModal(subjectId) {
@@ -319,6 +372,8 @@ class AttendanceTracker {
         const classesNeededFor75 = Math.max(0, Math.ceil(totalClasses * 0.75) - attendedClasses);
         
         const today = new Date().toLocaleDateString();
+        const isMarked = this.todayMarked[subjectId];
+        const hasReachedLimit = subject.totalClassesPlanned > 0 && totalClasses >= subject.totalClassesPlanned;
 
         container.innerHTML = `
             <div class="text-center mb-4">
@@ -326,14 +381,26 @@ class AttendanceTracker {
                 <p class="text-muted">Was there a class today? Mark your attendance:</p>
             </div>
             
-            <div class="d-flex justify-content-center gap-3 mb-4">
-                <button type="button" class="btn btn-success btn-lg" onclick="window.attendanceApp.markTodayAttendance(true)">
-                    <i class="fas fa-check me-2"></i>Present
-                </button>
-                <button type="button" class="btn btn-danger btn-lg" onclick="window.attendanceApp.markTodayAttendance(false)">
-                    <i class="fas fa-times me-2"></i>Absent
-                </button>
-            </div>
+            ${isMarked ? `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    You've already marked attendance for this subject today.
+                </div>
+            ` : hasReachedLimit ? `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    You've reached the planned number of classes (${subject.totalClassesPlanned}).
+                </div>
+            ` : `
+                <div class="d-flex justify-content-center gap-3 mb-4">
+                    <button type="button" class="btn btn-success btn-lg" onclick="window.attendanceApp.markTodayAttendance(true)">
+                        <i class="fas fa-check me-2"></i>Present
+                    </button>
+                    <button type="button" class="btn btn-danger btn-lg" onclick="window.attendanceApp.markTodayAttendance(false)">
+                        <i class="fas fa-times me-2"></i>Absent
+                    </button>
+                </div>
+            `}
 
             <div class="row g-3 mt-3">
                 <div class="col-6">
@@ -370,6 +437,18 @@ class AttendanceTracker {
         const subject = this.subjects.find(s => s.id === this.currentSubjectId);
         if (!subject) return;
 
+        // Check if attendance has already been marked today for this subject
+        if (this.todayMarked[this.currentSubjectId]) {
+            this.showAlert('Attendance already marked for today!', 'warning');
+            return;
+        }
+
+        // Check if we've reached the planned number of classes
+        if (subject.totalClassesPlanned > 0 && subject.totalClasses >= subject.totalClassesPlanned) {
+            this.showAlert(`You've reached the planned number of classes (${subject.totalClassesPlanned})!`, 'warning');
+            return;
+        }
+
         if (isPresent) {
             // Increase both total and attended classes
             subject.totalClasses = (subject.totalClasses || 0) + 1;
@@ -378,6 +457,9 @@ class AttendanceTracker {
             // Increase only total classes (new class held but absent)
             subject.totalClasses = (subject.totalClasses || 0) + 1;
         }
+
+        // Mark attendance as recorded for today
+        this.todayMarked[this.currentSubjectId] = true;
 
         this.saveUserData();
         this.loadSubjects();
