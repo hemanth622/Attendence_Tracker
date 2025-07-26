@@ -1,5 +1,5 @@
 /**
- * Custom CSS for College Attendance Tracker
+ * Custom CSS for College Attendance Tracker - React Version
  * 
  * © 2023 Hemanth - All Rights Reserved
  * 
@@ -30,7 +30,7 @@ body {
 }
 
 /* Login/Register Page Styles */
-#loginScreen, #registerScreen {
+.vh-100 {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
@@ -188,40 +188,6 @@ body {
     border-radius: var(--border-radius);
 }
 
-/* Attendance Calendar */
-.attendance-day {
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin: 2px;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.attendance-day.present {
-    background: var(--success-color);
-    color: white;
-}
-
-.attendance-day.absent {
-    background: var(--danger-color);
-    color: white;
-}
-
-.attendance-day.unmarked {
-    background: #e9ecef;
-    color: #6c757d;
-}
-
-.attendance-day:hover {
-    transform: scale(1.1);
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
@@ -287,4 +253,4 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
-}
+} 

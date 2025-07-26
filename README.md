@@ -1,6 +1,6 @@
 # College Attendance Tracker
 
-A simple web application to help students track their college attendance and maintain the required 75% attendance rate.
+A React-based web application to help students track their college attendance and maintain the required 75% attendance rate.
 
 ## ⚠️ COPYRIGHT NOTICE ⚠️
 
@@ -14,22 +14,35 @@ Any use of this code without explicit written permission is a violation of copyr
 
 ## Features
 
-- User registration and login
-- Add and manage subjects
-- Track daily attendance
+- User registration and login system
+- Add, edit, and delete subjects
+- Track daily attendance with present/absent marking
 - Visual statistics and analytics
+- Progress tracking for planned classes
+- Warning system for subjects with low attendance
 - Local storage for data persistence
 - Responsive design for all devices
 
-## How to Run (No Server Required)
+## How to Run
 
-This is a client-side application that runs entirely in your browser without needing a server:
+This is a React application that requires Node.js to run:
 
-1. Simply open the `index.html` file in your web browser:
-   - Double-click the `index.html` file in your file explorer
-   - Or drag and drop the `index.html` file into your browser window
+1. Install dependencies:
+   ```
+   npm install
+   ```
 
-2. The application will load and you can:
+2. Start the development server:
+   ```
+   npm start
+   ```
+
+3. Open your browser and navigate to:
+   ```
+   http://localhost:3000
+   ```
+
+4. The application will load and you can:
    - Create a new account
    - Log in with your credentials
    - Start tracking your attendance
@@ -43,9 +56,16 @@ All data is stored locally in your browser's localStorage. This means:
 
 ## Technologies Used
 
-- HTML5
+- React 18
+- React Bootstrap
+- React Icons
 - CSS3
-- JavaScript (Vanilla)
-- Bootstrap 5
-- Font Awesome
-- Local Storage API 
+- Local Storage API
+- JavaScript ES6+
+
+## Project Structure
+
+- `src/components/` - React components
+- `src/contexts/` - React context for state management
+- `src/style.css` - Custom styling
+- `public/` - Static assets and HTML template 
