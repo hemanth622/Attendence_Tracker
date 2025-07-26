@@ -23,45 +23,10 @@ Any use of this code without explicit written permission is a violation of copyr
 - Local storage for data persistence
 - Responsive design for all devices
 
-## How to Run
 
-This is a React application that requires Node.js to run:
 
-1. Install dependencies:
-   ```
-   npm install
-   ```
 
-2. Start the development server:
-   ```
-   npm start
-   ```
 
-3. Open your browser and navigate to:
-   ```
-   http://localhost:3000
-   ```
-
-4. The application will load and you can:
-   - Create a new account
-   - Log in with your credentials
-   - Start tracking your attendance
-
-## Data Storage
-
-All data is stored locally in your browser's localStorage. This means:
-- Your data stays on your device
-- No internet connection is required after initial load
-- Clearing browser data will erase your attendance records
-
-## Technologies Used
-
-- React 18
-- React Bootstrap
-- React Icons
-- CSS3
-- Local Storage API
-- JavaScript ES6+
 
 ## Project Structure
 
